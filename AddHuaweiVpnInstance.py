@@ -35,7 +35,7 @@ interface Vlanif{0}
 ip route-static vpn-instance {0} 0.0.0.0 0.0.0.0 {1} {2} description {0}_to_{1}
 ipv6 route-static vpn-instance {0} :: 0 {1} {3} description {0}_to_{1}
 #""".format(D20_vlan, next_interface, next_hop, ipv6_next_hop)
-       #print("-----------------------------------------------------------------------")
+       print("-----------------------------------------------------------------------")
        print(add_vpn_instance,add_to_d20_vlan_address,router_nex_hop)
     file.close()
 def AddHuaWeiPbr():
@@ -53,6 +53,8 @@ traffic classifier ipv4any
 traffic classifier ipv6any
  if-match ipv6 acl 2200
 #"""
+    print(acl_and_classifier)
+    print("-----------------------------------------------------------------------")
     test="123"
     with open("Address.txt", "r") as file:
         for line in file:
@@ -63,32 +65,35 @@ traffic classifier ipv6any
             next_interface = line.split(",")[3]
             next_hop = line.split(",")[4]
             ipv6_next_hop = line.split(",")[5]
-            des = line.split(",")[6]
-            print(acl_and_classifier)
+            #des = line.split(",")[6]
             v4_behavior = """#
 traffic behavior v4_to_{0}
  redirect nexthop {1}
 #""".format(next_interface,next_hop)
-            print(v4_behavior)
-            v6_behavior ="""traffic behavior v6_to_{0}
+          #  print(v4_behavior)
+            v6_behavior ="""
+traffic behavior v6_to_{0}
  redirect nexthop {1}
 #""".format(next_interface,ipv6_next_hop)
-            print(v6_behavior)
-            set_Traffic_policy="""vlan {0}
-traffic-policy v4_to_{1} inbound
-traffic-policy v6_to_{1} inbound""".format(D20_vlan,next_interface)
-            print(set_Traffic_policy)
-            set_D20_address="""#
+           # print(v6_behavior)
+            set_Traffic_policy="""
+vlan {0}
+ traffic-policy v4_to_{1} inbound
+ traffic-policy v6_to_{1} inbound
+#""".format(D20_vlan,next_interface)
+           # print(set_Traffic_policy)
+            set_D20_address="""
 int vlan {0}
 ip add {1}
-ipv6 enable
-ipv6 add {2}
+ ipv6 enable
+ ipv6 add {2}
 #""".format(D20_vlan,D20_address,D20_ipv6Address)
-            print(set_D20_address)
+            print(v4_behavior,v6_behavior,set_Traffic_policy,set_D20_address)
+            print("-----------------------------------------------------------------------")
 
 
 
 
 if __name__ == '__main__':
-    AddHuaWeiVpnInstance()
-    #AddHuaWeiPbr()
+    #AddHuaWeiVpnInstance()
+    AddHuaWeiPbr()
